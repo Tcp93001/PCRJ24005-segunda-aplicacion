@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react"
+import { BASE_URL } from "../variables/variables";
 
 const AuthContext = createContext({
   isLoggedIn: false,
@@ -15,13 +16,34 @@ export function AuthContextProvider({ children }) {
     if (isAuthenticated === '1') setIsLoggedIn(true)
   }, [])
 
-  const loginHandler = (email, password) => {
-    localStorage.setItem('isLoggedIn', '1')
-    setIsLoggedIn(true);
+  const fetchUser = async (email) => {
+    const url = `${BASE_URL}users.json?orderBy="email"&equalTo="${email}"`
+    const response = await fetch(url)
+
+    if (!response.ok) throw new Error("algo salio mal")
+    return response.json()
+  }
+
+
+  const loginHandler = async(email) => {
+    try {
+      const user = await fetchUser(email)
+      const userId = Object.keys(user)[0]
+
+      if (!userId) throw new Error('Correo invalido')
+
+      localStorage.setItem('isLoggedIn', '1')
+      localStorage.setItem('userId', userId)
+      setIsLoggedIn(true);
+      console.log('user', user)
+    } catch(error) {
+      console.log('Error', error.message)
+    }
   };
 
   const logoutHandler = () => {
     localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem('userId')
     setIsLoggedIn(false);
   };
 

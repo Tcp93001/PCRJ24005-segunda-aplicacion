@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://react-pcrj24005-default-rtdb.firebaseio.com/'
