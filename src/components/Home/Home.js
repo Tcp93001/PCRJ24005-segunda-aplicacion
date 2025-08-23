@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import useHttp from "../../hooks/use-http";
 import Card from "../UI/Card/Card";
 import styles from "./Home.module.css";
 import { BASE_URL } from "../../variables/variables";
 
 function Home() {
+  const { userId } = useParams()
   const [user, setUser] = useState({
     first_name: '',
     last_name: '',
@@ -15,13 +17,12 @@ function Home() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userId = localStorage.getItem('userId')
       const url = `${BASE_URL}users.json?orderBy="$key"&equalTo="${userId}"`
 
       const data = await request({ url })
 
       setUser({
-        first_name: data[userId]?.first_name ,
+        first_name: data[userId]?.first_name,
         last_name: data[userId]?.last_name,
         email: data[userId]?.email
       })
